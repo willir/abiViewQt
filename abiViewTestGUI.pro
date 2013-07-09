@@ -28,10 +28,10 @@ INCLUDEPATH += \
         includes/ \
         includes/emboss/ \
 
-unix:!macx:!symbian: LIBS += -L$$PWD/libs/ -lajax
-unix:!macx:!symbian: LIBS += -L$$PWD/libs/ -lepcre
-unix:!macx:!symbian: LIBS += -L$$PWD/libs/ -leexpat
-unix:!macx:!symbian: LIBS += -L$$PWD/libs/ -lezlib
+unix:!symbian: LIBS += -L$$PWD/libs/ -lajax
+unix:!symbian: LIBS += -L$$PWD/libs/ -lepcre
+unix:!symbian: LIBS += -L$$PWD/libs/ -leexpat
+unix:!symbian: LIBS += -L$$PWD/libs/ -lezlib
 
 INCLUDEPATH += $$PWD/libs
 DEPENDPATH += $$PWD/libs
