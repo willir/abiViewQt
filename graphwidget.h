@@ -5,6 +5,8 @@
 #include <QPainterPath>
 #include <QPainter>
 
+#include <map>
+
 #include "ajarch.h"
 #include "ajarr.h"
 #include "ajstr.h"
@@ -29,9 +31,12 @@ protected:
 
 private:
 
-    static const int   GRPAH_PADDING_LEFT    = 8;
-    static const int   GRAPH_HEADER_HEIGHT   = 40;
-    static const int   GRAPH_TEXT_Y_POS      = 20;
+    static const int  GRPAH_PADDING_LEFT    = 8;
+    static const int  GRAPH_HEADER_HEIGHT   = 40;
+    static const int  GRAPH_TEXT_Y_POS      = 20;
+    static const Qt::GlobalColor GRAPH_VERICAL_MOUSE_LINE_COLOR = Qt::lightGray;
+
+    static const std::map<char, Qt::GlobalColor> BASES_MAP_COLOR;
 
     AjPInt2d  trace;
     AjPStr    nseq;
@@ -41,6 +46,7 @@ private:
     ajlong    lastNonTrashPoint;
     ajint     tmax;                // Max signal strength
     QPoint    presedMousePos;      // Not isNull if mouse was presed.
+    char      basesOrder[4];       // Sequnce bases order
 
     bool      hideTrash;
 
@@ -63,6 +69,7 @@ private:
 
     void drawSequenceGraph(QPainterPath *path, ajint ibase);
     void drawSequenceText(QPainter *p);
+
     /**
      * Draws vertical line at {@link presedMousePos} if it isn't null.
      */

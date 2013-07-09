@@ -20,7 +20,6 @@ public:
 
 private slots:
     void onLoadAbiFileClicked();
-
 private:
     Ui::MainWindow *ui;
     int pushButtonClickCount;

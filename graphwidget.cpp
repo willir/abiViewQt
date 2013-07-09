@@ -17,6 +17,13 @@
 
 using namespace std;
 
+const std::map<char, Qt::GlobalColor> GraphWidget::BASES_MAP_COLOR {
+        {'A', Qt::green},
+        {'T', Qt::red},
+        {'G', Qt::black},
+        {'C', Qt::blue}
+};
+
 GraphWidget::GraphWidget(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     this->trace          = NULL;
     this->nseq           = NULL;
@@ -108,8 +115,6 @@ bool GraphWidget::readSeqFrom(const char *fileName) {
     ajlong    dataOffset[4]  = {0};
     AjPFile   fp             = NULL;
 
-    char res1, res2, res3, res4;
-
     /* BYTE[i] is a byte mask for byte i */
     const ajlong BYTE[] = { 0x000000ff };
 
@@ -132,10 +137,10 @@ bool GraphWidget::readSeqFrom(const char *fileName) {
 
     fwo_ = ajSeqABIGetFWO(fp);	       /* find FWO tag - field order GATC   */
 
-    res1 = (char) (fwo_ >> 24 & BYTE[0]);
-    res2 = (char) (fwo_ >> 16 & BYTE[0]);
-    res3 = (char) (fwo_ >> 8  & BYTE[0]);
-    res4 = (char) (fwo_ & BYTE[0]);
+    basesOrder[0] = (char) (fwo_ >> 24 & BYTE[0]);
+    basesOrder[1] = (char) (fwo_ >> 16 & BYTE[0]);
+    basesOrder[2] = (char) (fwo_ >> 8  & BYTE[0]);
+    basesOrder[3] = (char) (fwo_ & BYTE[0]);
 
     ajSeqABIReadSeq(fp, baseO, numBases, &nseq);
     basePosO = ajSeqABIGetBasePosOffset(fp); /* find PLOC tag & get offset */
@@ -154,7 +159,7 @@ bool GraphWidget::readSeqFrom(const char *fileName) {
     qDebug().nospace() << "base0:" << baseO << " basePosO:" << basePosO;
     qDebug().nospace() << "numPoints:" << numPoints << " tmax:" << tmax;
     qDebug().nospace() << "lastNonTrashPoint:" << lastNonTrashPoint;
-    qDebug().nospace() << res1 << res2 << res3 << res4;
+    qDebug().nospace() << basesOrder[0] << basesOrder[1] << basesOrder[2] << basesOrder[3];
 
     printAjShort(basePositions, "basePositions");
     printAjInt2d(trace, "trace");
@@ -198,13 +203,15 @@ void GraphWidget::drawSequenceText(QPainter *p) {
     QFont font("Courier New");
     font.setPixelSize(14);
     p->setFont(font);
-    p->setPen(QPen(Qt::black));
 
     int charHalfWidth = QFontMetrics(font).width("C") / 2;
 
     for(int ibase=0; ibase<seqLen; ibase++) {
         int xPos = GRPAH_PADDING_LEFT + ajShortGet(this->basePositions, ibase) - charHalfWidth;
-        QString txt(ajStrGetCharPos(this->nseq, ibase));
+        char seqChar = ajStrGetCharPos(this->nseq, ibase);
+        QString txt(seqChar);
+
+        p->setPen(BASES_MAP_COLOR.at(seqChar));
         p->drawText(xPos, GRAPH_TEXT_Y_POS, txt);
     }
 }
@@ -214,7 +221,7 @@ void GraphWidget::drawMouseVerticalLine(QPainter *p) {
     if(this->presedMousePos.isNull())
         return;
 
-    p->setPen(QPen(Qt::red, 1, Qt::SolidLine));
+    p->setPen(QPen(GRAPH_VERICAL_MOUSE_LINE_COLOR, 1, Qt::SolidLine));
 
     QPoint top(this->presedMousePos.x(), 0);
     QPoint bottom(this->presedMousePos.x(), height());
@@ -235,9 +242,10 @@ void GraphWidget::paintEvent(QPaintEvent *) {
 
     setMinimumWidth(GRPAH_PADDING_LEFT + this->numVisiblePoints);
 
-    enum Qt::GlobalColor baseColors[] = {Qt::red, Qt::blue, Qt::green, Qt::black};
     for(ajint ibase=0; ibase<4; ++ibase) {
-        p.setPen(QPen(baseColors[ibase], 1, Qt::SolidLine)); // Draw settings
+        Qt::GlobalColor color = BASES_MAP_COLOR.at(basesOrder[ibase]);
+        p.setPen(QPen(color, 1, Qt::SolidLine)); // Draw settings
+
         QPainterPath path;
         this->drawSequenceGraph(&path, ibase);
         p.drawPath(path);
@@ -282,3 +290,4 @@ void GraphWidget::hideTrashStateChanged(int state) {
     this->setNumVisiblePoints();
     this->update();
 }
+//*****************************************************************

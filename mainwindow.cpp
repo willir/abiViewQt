@@ -3,9 +3,7 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QLayout>
 #include <typeinfo>
-
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -19,10 +17,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->graphWidget->hideTrashStateChanged(ui->checkHideTrash->isChecked());
 }
+//*****************************************************************
 
 MainWindow::~MainWindow() {
     delete ui;
 }
+//*****************************************************************
 
 void MainWindow::onLoadAbiFileClicked() {
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -35,3 +35,4 @@ void MainWindow::onLoadAbiFileClicked() {
     ui->graphWidget->readSeqFrom(fileName.toStdString().c_str());
     ui->graphWidget->update();
 }
+//*****************************************************************

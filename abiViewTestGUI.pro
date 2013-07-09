@@ -9,13 +9,16 @@ QT       += core gui
 TARGET = abiViewTestGUI
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES += main.cpp\
            mainwindow.cpp \
-           graphwidget.cpp
+           graphwidget.cpp \
+    wilscrollarea.cpp
 
 HEADERS  += mainwindow.h \
-            graphwidget.h
+            graphwidget.h \
+    wilscrollarea.h
 
 FORMS    += mainwindow.ui
 
